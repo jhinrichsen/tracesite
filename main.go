@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jhinrichsen/tracesite/src/cli"
+	"github.com/jhinrichsen/tracesite/cli"
 )
 
 func main() {
