@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/kalbhor/tracesite/src/tracesite"
+	"github.com/jhinrichsen/tracesite/src/tracesite"
 	"github.com/urfave/cli"
 )
 
