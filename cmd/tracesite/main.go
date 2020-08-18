@@ -9,14 +9,15 @@ import (
 	"github.com/jhinrichsen/tracesite"
 )
 
+// Default values for all available options.
 const (
-	DEFAULT_PORT        = 33434
-	DEFAULT_PACKET_SIZE = 52
-	DEFAULT_TIMEOUT_MS  = 4000
-	DEFAULT_RETRIES     = 3
-	DEFAULT_DEST        = "kalbhor.xyz"
-	DEFAULT_MAX_HOPS    = 24
-	DEFAULT_START_TTL   = 1
+	DefaultPort       = 33434
+	DefaultPacketSize = 52
+	DefaultTimeoutMs  = 4000
+	DefaultRetries    = 3
+	DefaultDest       = "kalbhor.xyz"
+	DefaultMaxHops    = 24
+	DefaultStartTTL   = 1
 )
 
 func main() {
@@ -39,12 +40,12 @@ func main() {
 		flag.PrintDefaults()
 	}
 	var o tracesite.Options
-	flag.IntVar(&o.Hop, "hop", DEFAULT_START_TTL, "start from a custom hop number")
-	flag.IntVar(&o.MaxHops, "maxhops", DEFAULT_MAX_HOPS, "custom max hops")
-	flag.IntVar(&o.Port, "port", DEFAULT_PORT, "custom port number")
-	flag.IntVar(&o.Timeout, "timeout", DEFAULT_TIMEOUT_MS, "custom timeout in ms")
-	flag.IntVar(&o.Retries, "retries", DEFAULT_RETRIES, "custom retries")
-	flag.IntVar(&o.PacketSize, "packetsize", DEFAULT_PACKET_SIZE, "custom packet size")
+	flag.IntVar(&o.Hop, "hop", DefaultStartTTL, "start from a custom hop number")
+	flag.IntVar(&o.MaxHops, "maxhops", DefaultMaxHops, "custom max hops")
+	flag.IntVar(&o.Port, "port", DefaultPort, "custom port number")
+	flag.IntVar(&o.Timeout, "timeout", DefaultTimeoutMs, "custom timeout in ms")
+	flag.IntVar(&o.Retries, "retries", DefaultRetries, "custom retries")
+	flag.IntVar(&o.PacketSize, "packetsize", DefaultPacketSize, "custom packet size")
 
 	flag.Parse()
 	for _, destination := range flag.Args() {

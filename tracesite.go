@@ -110,7 +110,7 @@ func Tracesite(destination string, options Options) error {
 			if hop.IP() == destAddrString || ttl >= options.MaxHops {
 				break
 			}
-			ttl += 1
+			ttl++
 			fmt.Printf("\n%v. %v // [%v] // %v", hop.TTL, hop.Domain(), hop.IP(), hop.ElapsedTime)
 
 		} else {
@@ -120,10 +120,10 @@ func Tracesite(destination string, options Options) error {
 					fmt.Printf("\n%v. ", hop.TTL)
 				}
 				fmt.Printf("* ")
-				retries += 1
+				retries++
 			} else {
 				retries = 0
-				ttl += 1
+				ttl++
 				fmt.Println()
 			}
 		}
