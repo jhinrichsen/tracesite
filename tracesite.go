@@ -6,8 +6,6 @@ import (
 	"net"
 	"syscall"
 	"time"
-
-	"github.com/urfave/cli"
 )
 
 func socketAddr() ([4]byte, error) {
@@ -45,10 +43,21 @@ func destAddr(dest string) ([4]byte, error) {
 	return destAddr, nil
 }
 
-func Tracesite(options *cli.Context) error {
+// Options for tracing site.
+type Options struct {
+	Hop        int
+	Timeout    int
+	PacketSize int
+	MaxHops    int
+	Port       int
+	Retries    int
+}
 
-	ttl := options.Int("hop")
-	tv := syscall.NsecToTimeval(1000 * 1000 * (int64)(options.Int("timeout")))
+// Tracesite will show detailled information for the route to destination.
+func Tracesite(destination string, options Options) error {
+
+	ttl := options.Hop
+	tv := syscall.NsecToTimeval(1000 * 1000 * (int64)(options.Timeout))
 	retries := 0
 
 	socketAddr, err := socketAddr()
@@ -57,7 +66,7 @@ func Tracesite(options *cli.Context) error {
 		return err
 	}
 
-	destAddr, err := destAddr(options.Args().Get(0))
+	destAddr, err := destAddr(destination)
 	if err != nil {
 		return err
 	}
@@ -76,9 +85,9 @@ func Tracesite(options *cli.Context) error {
 	defer syscall.Close(sendSocket)
 
 	fmt.Printf("tracing [%v] - %v with packetSize=%v, maxHops=%v, startHop=%v, timeout=%v\n\n",
-		options.Args().Get(0), destAddr,
-		options.Int("packetsize"), options.Int("maxhops"),
-		options.Int("hop"), options.Int("timeout"))
+		destination, destAddr,
+		options.PacketSize, options.MaxHops,
+		options.Hop, options.Timeout)
 
 	for {
 		start := time.Now()
@@ -86,10 +95,10 @@ func Tracesite(options *cli.Context) error {
 		syscall.SetsockoptInt(sendSocket, 0x0, syscall.IP_TTL, ttl)
 		syscall.SetsockoptTimeval(recvSocket, syscall.SOL_SOCKET, syscall.SO_RCVTIMEO, &tv)
 
-		syscall.Bind(recvSocket, &syscall.SockaddrInet4{Port: options.Int("port"), Addr: socketAddr})
-		syscall.Sendto(sendSocket, []byte{0x0}, 0, &syscall.SockaddrInet4{Port: options.Int("port"), Addr: destAddr})
+		syscall.Bind(recvSocket, &syscall.SockaddrInet4{Port: options.Port, Addr: socketAddr})
+		syscall.Sendto(sendSocket, []byte{0x0}, 0, &syscall.SockaddrInet4{Port: options.Port, Addr: destAddr})
 
-		p := make([]byte, options.Int("packetsize"))
+		p := make([]byte, options.PacketSize)
 		destAddrString := fmt.Sprintf("%v.%v.%v.%v", destAddr[0], destAddr[1], destAddr[2], destAddr[3])
 
 		n, from, err := syscall.Recvfrom(recvSocket, p, 0)
@@ -98,7 +107,7 @@ func Tracesite(options *cli.Context) error {
 		if err == nil {
 			retries = 0
 			hop := Hop{Status: true, Addr: from, N: n, ElapsedTime: elapsed, TTL: ttl}
-			if hop.IP() == destAddrString || ttl >= options.Int("maxhops") {
+			if hop.IP() == destAddrString || ttl >= options.MaxHops {
 				break
 			}
 			ttl += 1
@@ -106,7 +115,7 @@ func Tracesite(options *cli.Context) error {
 
 		} else {
 			hop := Hop{Status: false, N: n, ElapsedTime: elapsed, TTL: ttl}
-			if retries < options.Int("retries") {
+			if retries < options.Retries {
 				if retries == 0 {
 					fmt.Printf("\n%v. ", hop.TTL)
 				}
