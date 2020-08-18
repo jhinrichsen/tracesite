@@ -48,6 +48,8 @@ func main() {
 
 	flag.Parse()
 	for _, destination := range flag.Args() {
-		tracesite.Tracesite(destination, o)
+		if err := tracesite.Tracesite(destination, o); err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+		}
 	}
 }
