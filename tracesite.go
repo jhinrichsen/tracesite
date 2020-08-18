@@ -9,7 +9,7 @@ import (
 )
 
 func socketAddr() ([4]byte, error) {
-	socketAddr := [4]byte{0, 0, 0, 0}
+	socketAddr := [...]byte{0, 0, 0, 0}
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		return socketAddr, err
@@ -28,7 +28,7 @@ func socketAddr() ([4]byte, error) {
 }
 
 func destAddr(dest string) ([4]byte, error) {
-	destAddr := [4]byte{0, 0, 0, 0}
+	destAddr := [...]byte{0, 0, 0, 0}
 	addrs, err := net.LookupHost(dest)
 	if err != nil {
 		return destAddr, err
