@@ -55,13 +55,11 @@ type Options struct {
 
 // Tracesite will show detailled information for the route to destination.
 func Tracesite(destination string, options Options) error {
-
 	ttl := options.Hop
 	tv := syscall.NsecToTimeval(1000 * 1000 * (int64)(options.Timeout))
 	retries := 0
 
 	socketAddr, err := socketAddr()
-
 	if err != nil {
 		return err
 	}
@@ -112,7 +110,6 @@ func Tracesite(destination string, options Options) error {
 			}
 			ttl++
 			fmt.Printf("\n%v. %v // [%v] // %v", hop.TTL, hop.Domain(), hop.IP(), hop.ElapsedTime)
-
 		} else {
 			hop := Hop{Status: false, N: n, ElapsedTime: elapsed, TTL: ttl}
 			if retries < options.Retries {
@@ -127,9 +124,6 @@ func Tracesite(destination string, options Options) error {
 				fmt.Println()
 			}
 		}
-
 	}
-
 	return nil
-
 }
